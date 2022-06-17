@@ -1,0 +1,8 @@
+image:
+  repository: docker.io/raffy23/keptn-gitea-provisioner
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+gitea:
+  endpoint: "http://gitea-http.default:3000/"

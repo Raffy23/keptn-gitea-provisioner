@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 0.0.0-dev
+description: Helm Chart for the keptn-gitea-provisioner
+name: keptn-gitea-provisioner
+type: application
+version: 0.0.0-dev

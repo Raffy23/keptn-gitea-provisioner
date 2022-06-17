@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "keptn-gitea-provisioner"
+  labels:
+    app.kubernetes.io/name: keptn-gitea-provisioner
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keptn-gitea-provisioner
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keptn-gitea-provisioner
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: "gitea-provisioner"
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 2000
+            capabilities:
+              drop: [ "all" ]
+            seccompProfile:
+              type: RuntimeDefault
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: GITEA_ENDPOINT
+              value: {{ .Values.gitea.endpoint }}
+            - name: GITEA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret
+                  key: username
+            - name: GITEA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret
+                  key: password
+          resources:
+            requests:
+              cpu: 5m
+              memory: 32M
+            limits:
+              cpu: 10m
+              memory: 64M

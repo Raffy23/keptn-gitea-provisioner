@@ -1,0 +1,27 @@
+apiVersion: skaffold/v2beta23
+kind: Config
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+    - image: raffy23/keptn-gitea-provisioner
+      docker:
+        dockerfile: Dockerfile
+
+deploy:
+  helm:
+    flags:
+      install: [ "--create-namespace" ]
+      upgrade: [ "--install", "--create-namespace", "--reuse-values"] # keep configuration
+    releases:
+      - name: keptn-gitea-provisioner # needs to be the same name as currently used (check via helm ls -n keptn)
+        namespace: default # needs to be the same namespace as where the helm-chart is currently deployed
+        # upgradeOnChange: true
+        # recreatePods: false # don't recreate all pods
+        artifactOverrides:
+          image: raffy23/keptn-gitea-provisioner
+        imageStrategy:
+          helm: { }
+        setValueTemplates:
+        overrides:
+        chartPath: helm
